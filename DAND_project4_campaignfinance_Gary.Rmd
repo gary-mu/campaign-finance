@@ -1,5 +1,5 @@
-2016 USA Presidential Campaign Finance in Ohio (data till 11/20/2015)
-by Gary
+2016 USA Presidential Campaign Finance in Ohio (data till 11/20/2015) by Gary
+
 ========================================================
 
 #Abstract
