@@ -1,16 +1,17 @@
-2016 USA Presidential Campaign Finance in Ohio (data till 11/20/2015) by Gary
+##2016 USA Presidential Campaign Finance in Ohio (data till 11/20/2015) 
+###by Gary
 
 ========================================================
 
 #Abstract
 
-Presidential campaign finance data contains much valuable information, therefore, it always been on the center stage during any presidential election. On a high level, it tells us the demographic and geographic support for each party and candidate. The patterns of the donation flow also reflects the current status of the candidates in the race.
+Presidential campaign finance data contains much valuable information, therefore, it always been on the center stage during any presidential election. On a high level, it tells us the demographic and geographic support for each party and candidate. The patterns of the donation flow also reflect the current status of the candidates in the race.
 
-For this exploratory data analysis, I am examining the 2016 presidential campaign finance data from the Federal Election Commission. The data is up to date untill November 20, 2015. 
+For this exploratory data analysis, I am examining the 2016 presidential campaign finance data from the Federal Election Commission. The data is up to date until November 20, 2015. 
 
 The reason of choosing data from Ohio in particular is because Ohio is often considered the "Swing State", which means there is no historically state-wide consistent strong support to a particular party in presidential elections.  Therefore, it provides us a more "neutral" view of the donations to each party and candidates in the 2016 presidential race.
 
-In this analysis, I try to answer three questions: First, which party and candidates have garnered the most support in Ohio (reflected by the donations received)? Second, is there a difference in donations betwene the genders, if so, what are the patterns? Lastly, where do donations come from geographically? In particular, do big counties tend to donate large amount of donation both in aggregate and per capita? 
+In this analysis, I try to answer three questions: First, which party and candidates have garnered the most support in Ohio (reflected by the donations received)? Second, is there a difference in donations between the genders, if so, what are the patterns? Lastly, where do donations come from geographically? In particular, do big counties tend to donate large amount of donation both in aggregate and per capita? 
 
 By answering these questions, we can understand a bit more of the 2016 presidential elections, and possibly, the developments as we come near 2016 in Ohio.
 
@@ -102,7 +103,7 @@ oh$contb_receipt_dt = as.Date(oh$contb_receipt_dt, format = '%d-%b-%y')
 ```{r DataSetSummary}
 dim(oh)
 ```
-The Ohio 2016 Presidential Campaign Finance from Federal Election Commision website has 9598 observations and 18 variables, each observation indicates a donation transaction. 
+The Ohio 2016 Presidential Campaign Finance from Federal Election Commission website has 9598 observations and 18 variables, each observation indicates a donation transaction. 
 
 After processing the data and adding additional variables to help with analysis, the new data set has 9 additional variables, and 57 observations were dropped. 
 The reason of the observations is because some donation amount has negative value. While it may be human error (it's impossible to give negative dollars), I filtered them out from the dataset for a cleaner view of the donations. 
@@ -115,8 +116,8 @@ The reason of the observations is because some donation amount has negative valu
 5. party: candidate's political party affiliation
 6. entity: donor entity, whether an individual or a company
 7. contbr_gender: donor's gender, predicted by gender function from gender package
-8. latitude: donor's latitude, derived from Ohio donor zipcode and data from zipcode package
-9. longitude: donor's longitude, derived from Ohio donor zipcode and data from zipcode package
+8. latitude: donor's latitude, derived from Ohio donor zip codes and data from zipcode package
+9. longitude: donor's longitude, derived from Ohio donor zip codes and data from zipcode package
 
 ------
 
@@ -150,9 +151,9 @@ Until November 20, 2015, total donations made to presidential candidates in Ohio
 
 On the first look, Republican party seems to take the majority share of the donor contribution: Republican candidates have almost 3.5 million donations in total, which is 3 times than that of the Democratic party, with only 892 thousand dollars in donation.
 
-If we look merely at the aggregated donations, it seems the Republican party is leading the Democrats in terms of donor supportsin Ohio; however, a closer look at the candidate level tells a different story. 
+If we look merely at the aggregated donations, it seems the Republican party is leading the Democrats in terms of donor supports in Ohio; however, a closer look at the candidate level tells a different story. 
 
-### More Repiblican Candidates in the race than Democrats
+### More Republican Candidates in the race than Democrats
 
 ```{r, echo = FALSE}
 dat = oh %>%
@@ -203,12 +204,12 @@ ggplot(data = dat2, aes(x = cand_last, y = money_received))+
 
 Looking at the donations received by each candidate, a couple things jumped out:
 
-First, it's very obious that most of the total donations in Ohio are received by one candidate - John Kasich. This should not come as surprising as Kasich is the current Ohio State Governor since 2011, and he seems to be able to garner a majority of monetary support from local donors. In fact, of all the donations made in Ohio, almost 50% of them went to Kasich (which equates to 61% donation made to Republican party), and the remaining 50% is received by the rest of the 16 candidates.
+First, it's very obvious that most of the total donations in Ohio are received by one candidate - John Kasich. This should not come as surprising as Kasich is the current Ohio State Governor since 2011, and he seems to be able to garner a majority of monetary support from local donors. In fact, of all the donations made in Ohio, almost 50% of them went to Kasich (which equates to 61% donation made to Republican party), and the remaining 50% is received by the rest of the 16 candidates.
 
 Second, within each party, the donation is concentrated on only a few top front-runners.
-For Democratic party, Hilary Clinto and Bernie Sanders are the two leading candidates, taking 98% of total Democratic donations in Ohio state, and of which, 85% goes towards Hilary.
+For Democratic party, Hilary Clinton and Bernie Sanders are the two leading candidates, taking 98% of total Democratic donations in Ohio state, and of which, 85% goes towards Hilary.
 
-For Republican party, Kasich has the majority of the donations in Ohio, and leading the rest of the Republican candidates by a wide margin. The other Republican front runners - Carson, Rubio, Cruz and Bush takes a total of 32% Republican donors' donations, and the reaminin 7% goes towards the rest of the 12 Republican runners.
+For Republican party, Kasich has the majority of the donations in Ohio, and leading the rest of the Republican candidates by a wide margin. The other Republican front runners - Carson, Rubio, Cruz and Bush takes a total of 32% Republican donors' donations, and the reamining 7% goes towards the rest of the 12 Republican runners.
 
 ```{r, echo = FALSE, fig.width= 10}
 dat3 = oh %>%
@@ -247,7 +248,7 @@ We are able to see clearly who are the "front-runners" (defined by the donation 
 
 Because most of the donations are concentrated on only a few candidates, let's examine the donations for the candidates who received more than 5% of total dollars in each political party.
 
-For Democratic party, they are Hilary Clinton and Bernie Sanders; for Republican party, they are John Kasich, Marco Rubio, Ben Carson, Ted CRuz and Jeb Bush.
+For Democratic party, they are Hilary Clinton and Bernie Sanders; for Republican party, they are John Kasich, Marco Rubio, Ben Carson, Ted Cruz and Jeb Bush.
 
 ```{r, echo= F, warning= F}
 top_runners = c("Clinton", "Sanders", "Kasich", "Rubio", "Carson", "Bush", "Cruz")
@@ -263,7 +264,7 @@ ggplot(data = subset(oh, cand_last %in% top_runners),
 
 Kasich received the most amount of donations in Ohio, and from the boxplot above, it's obvious to see there are a few donors that made a huge amount of donations to Kasich, in particular, more than 15 thousand dollars in on donation. 
 
-We know the donation data includes individual donors and companies, as individual donors is more likely to make relatively lower amount of donations than firms, this may indicate that some companies may be making a significant amount of donations to a couple candidates, which we will examine later.
+We know the donation data includes individual donors and companies, as individual donors are more likely to make relatively lower amount of donations than firms, this may indicate that some companies may be making a significant amount of donations to a couple candidates, which we will examine later.
 
 ```{r, echo= F, warning= F}
 ggplot(data = subset(oh, cand_last %in% top_runners), 
@@ -276,7 +277,7 @@ ggplot(data = subset(oh, cand_last %in% top_runners),
   ggtitle('Donations Received by "Front-Running" Candidates excl. Outliers')
 ```
 
-If we filter out the outliers(donors who made significant amount of donations), it's still apparent that Kasich still receive large donation amounts from each donors with the highest mean donations and the 50% quantile of each donation amount is much higher than all other candidates.
+If we filter out the outliers (donors who made significant amount of donations), it's still apparent that Kasich still receive large donation amounts from each donors with the highest mean donations and the 50% quartile of each donation amount is much higher than all other candidates.
 
 Bush on the other hand, also has high average donation dollar amounts, this could mean he received donations from both small individual donors and possible a few large donations from companies. 
 
@@ -318,7 +319,7 @@ summary(oh$contb_receipt_amt)
 ```
 Donations in Ohio is heavily skewed towards the higher end, which means there are a couple of donors that made large amount of donations. 
 
-As the average donation is higher than the 3rd quantile (avg donation is $463, 3rd quantile donation is $250), it's very apparent that most of the donations are in smaller amounts. Since the distribution of donation amount is heavily skewed, median is the more robust statistics to describe the centrality of the donation data, and most of the donations are centered around $100.
+As the average donation is higher than the 3rd quartile (avg donation is $463, 3rd quartile donation is $250), it's very apparent that most of the donations are in smaller amounts. Since the distribution of donation amount is heavily skewed, median is the more robust statistics to describe the centrality of the donation data, and most of the donations are centered around $100.
 
 ```{r, echo = F}
 donors = oh %>%
@@ -373,7 +374,7 @@ p5 = ggplot(data = subset(oh, contb_receipt_amt<= quantile(contb_receipt_amt, .7
   scale_color_manual(values = party_colors) +
   ylab("Donation Amount per Donor")+
   xlab("Donation Date")+
-  ggtitle("75% of total Donations in Ohio\n(within 75% Quantile)")+
+  ggtitle("75% of total Donations in Ohio\n(within 75% quartile)")+
   theme(legend.position	= "top", plot.title = element_text(size = 12))
 
 p6 = ggplot(data = subset(oh, contb_receipt_amt<= quantile(contb_receipt_amt, .75)), 
@@ -382,13 +383,13 @@ p6 = ggplot(data = subset(oh, contb_receipt_amt<= quantile(contb_receipt_amt, .7
   scale_color_manual(values = party_colors) +
   ylab("Count of Donors")+
   xlab("Donation Amount")+
-  ggtitle("Donation Amount Distributions\n(within 75% Quantile)")+
+  ggtitle("Donation Amount Distributions\n(within 75% quartile)")+
   theme(plot.title = element_text(size = 12))
 
 grid.arrange(p5, p6, ncol=2)
 ```
 
-Looking at the 75% of the total donations, it's easy to see that most of the donations were made after April 2015, as most of the candidates officially announced the candidacy after April 2015 (except for Ted Criz, who announced in March, 2015).
+Looking at the 75% of the total donations, it's easy to see that most of the donations were made after April 2015, as most of the candidates officially announced the candidacy after April 2015 (except for Ted Cruz, who announced in March, 2015).
 
 From the histogram above, we can also see that most donations are at whole numbers like $50, $100, etc. This means that most donors are donating in $50 increment amounts. 
 
@@ -396,13 +397,13 @@ From the histogram above, we can also see that most donations are at whole numbe
 
 ## Gender and donations
 
-[A New York Times article](http://www.nytimes.com/2015/10/15/upshot/the-gender-gap-in-political-giving.html?_r=0) quoted from a Crowdpac research that "the wage and wealth gap between men and women plays a role [in fund-rasing gap]", and in the states where the gender income equality is smaller, more of politicians’ big donors are women. And it continues to say that "women give more to liberals and to other women."
+[A New York Times article](http://www.nytimes.com/2015/10/15/upshot/the-gender-gap-in-political-giving.html?_r=0) quoted from a Crowdpac research that "the wage and wealth gap between men and women plays a role [in fund-raising gap]", and in the states where the gender income equality is smaller, more of politicians’ big donors are women. And it continues to say that "women give more to liberals and to other women."
 
 In the Ohio presidential campaign financing data, we are able to predict each donor's gender by their first names. Hence, this allows us to examine if the points made by the research is true:
 
-1. Is a particular gender more likely to make political donation than the other? Does it also reflects on the amount donated to political candidates?
+1. Is a particular gender more likely to make political donation than the other? Does it also reflect on the amount donated to political candidates?
 
-2. Are female donors more lilely to donate to liberal candidates and/or to women candidates?
+2. Are female donors more likely to donate to liberal candidates and/or to women candidates?
 
 #### Donation inequality between genders
 ```{r, echo = F}
@@ -417,7 +418,7 @@ don_gender = oh %>%
 don_gender
 ```
 
-In Ohio, there are more male donors than female donors for the presidental election, with 5,558 men and 3,778 women donating to presidential candidates, which eqautes to 50% more male donors than female in Ohio. And the inequality does not stop there. 
+In Ohio, there are more male donors than female donors for the presidential election, with 5,558 men and 3,778 women donating to presidential candidates, which equates to 50% more male donors than female in Ohio. And the inequality does not stop there. 
 
 Looking at the average amount donated, men donated $478.27 on average while women donated $433.42 to presidential candidates, a 10% difference (or $44.85 difference) between the genders. 
 
@@ -431,7 +432,7 @@ male_donation = oh$contb_receipt_amt[oh$contbr_gender =="male"]
 t.test(female_donation, male_donation, alternative = "less")
 ```
 
-From the test output, we can see that there is indeed donations from women is significantly lower than that of men in Ohio (p = 0.006). According to The American Association of University Women (AAUW), Ohio ranks towards the bottom part of the gener income equality in the USA (ranks 33), with female earning only 78% of the predonminant wage earned by men. Hence, our presidential election campaign finance data in Ohio helped to corroborate that the gender income inequality does reflect on the political campaign financing betwene genders. 
+From the test output, we can see that the donations from women is indeed significantly lower than that of men in Ohio (p = 0.006). According to The American Association of University Women (AAUW), Ohio ranks towards the bottom part of the gender income equality in the USA (ranks 33), with female earning only 78% of the predominant wage earned by men. Hence, our presidential election campaign finance data in Ohio helped to corroborate that the gender income inequality does reflect on the political campaign financing between genders. 
 
 ```{r, echo = F}
 ggplot(data = subset(oh, !is.na(contbr_gender)&entity=="individual"), 
@@ -444,7 +445,7 @@ ggplot(data = subset(oh, !is.na(contbr_gender)&entity=="individual"),
        x = "Donation Dollar Amount")
 ```
 
-The distribution of the amount donated by gender is also heavilty skewed towards the higher end, especially by male donors, as there are a couple of male donors with more than $5000 donations, and the majority of the donors are concentrated on the lower end across genders. 
+The distribution of the amount donated by gender is also heavily skewed towards the higher end, especially by male donors, as there are a couple of male donors with more than $5000 donations, and the majority of the donors are concentrated on the lower end across genders. 
 
 Hence, we need to transform the axis to get a granular look into the majority of donation for both genders.
 
@@ -462,13 +463,13 @@ ggplot(data = subset(oh, !is.na(contbr_gender)&entity=="individual"),
 With log10 transformed donation amount, we have a closer to normal distribution.
 We can see from the chart that not only more men made donations to presidential candidates at every donation amount level, they also have higher donation amounts than women, especially on the higher end of donation amount. 
 
-Therefore, it also supports the hypothesis that if there is income inequality between genders in a state, it would also reflect on the poltical contribution.
+Therefore, it also supports the hypothesis that if there is income inequality between genders in a state, it would also reflect on the political contribution.
 
 #### Do women donate to liberals and female candidates?
 
 Another claim from the research is that women tend to donate more to liberal and/or women candidates.
 
-Although there is a certain complexity in dertermining if an individual candidate is liberal or conservative, and the scale at which how liberal or conservative they are, we are painting a broad stroke, with the Democratic party as liberal in general and the Republican party is conservative.
+Although there is a certain complexity in determining if an individual candidate is liberal or conservative, and the scale at which how liberal or conservative they are, we are painting a broad stroke, with the Democratic party as liberal in general and the Republican party is conservative.
 
 ```{r, echo = F}
 don_gen_ideo = oh %>%
@@ -492,7 +493,7 @@ ggplot(data = don_gen_ideo,
 
 Looking at female donor group only, Ohio women do not seem to donate more to liberals than conservatives on average - only 35% women donated to the Democratic party, and the average amount donated to Democrats are 20% less than to the Republicans ($383 vs. $461).
 
-However, when comaring men in Ohio, women have higher donations to the liberals relatively. Ohio men donated $276 on average to Democrats, and $541 to Republicans, a 49% difference, and only 23% men donated to Democrats.
+However, when comparing men in Ohio, women have higher donations to the liberals relatively. Ohio men donated $276 on average to Democrats, and $541 to Republicans, a 49% difference, and only 23% men donated to Democrats.
 
 So while Ohio women do not donate more to liberals within group, they do have higher tendency to make donations to candidates from the liberal party than men in Ohio. 
 
@@ -522,7 +523,7 @@ When it comes to donations to candidates by gender, female donors tend to donate
 
 While only 24% women in Ohio donated to female candidates (Clinton and Fiorina), the donation amounts to females far exceeds that to male candidates by 24% - $508 vs. $409.
 
-Comparing to men, the disparatiy is even more apparent: only 15% men donated to female candidates, and the average donation amount to female candidates is much less than male - $396 to female vs $492 to male, a 19% difference.
+Comparing to men, the disparity is even more apparent: only 15% men donated to female candidates, and the average donation amount to female candidates is much less than male - $396 to female vs $492 to male, a 19% difference.
 
 Hence, it also seems true that women tend to make more political donations to female donors than male.
 
@@ -547,7 +548,7 @@ ggplot() + geom_polygon(data=ohio, aes(x=long, y=lat, group = group),
   geom_text(data = top_cities, aes(long, lat, label = city), size = 4)
 ```
 
-Not surprisingly, most of the donors are concentrated in the big cities in Ohio like Cincinnati, Columbus, Clevland and TOledo. 
+Not surprisingly, most of the donors are concentrated in the big cities in Ohio like Cincinnati, Columbus, Cleveland and Toledo. 
 
 ```{r, fig.height = 12, fig.width = 8, echo= FALSE }
 latlong2county <- function(pointsDF) {
@@ -639,7 +640,7 @@ p8 = ggplot(data=ohio, aes(x=long, y=lat, group = group),
 grid.arrange(p7,p8, ncol =1)
 ```
 
-The total donation amount is the highest in the big counties mentioned above, as there are more donors in the densly populated areas. However, looking at donations per capita by county, some counties showed higher donations per capita like Adams, Belmont and Monroe. While we don't know if it's attributted by the higher the income per capita in those counties or if people in those counties are particularly active in donating to political candidates, the higher donation per capita in those counties indicate those counties may important roles in the primary election in Ohio; however, more data is needed to determine this. 
+The total donation amount is the highest in the big counties mentioned above, as there are more donors in the densely populated areas. However, looking at donations per capita by county, some counties showed higher donations per capita like Adams, Belmont and Monroe. While we don't know if it's attributed by the higher the income per capita in those counties or if people in those counties are particularly active in donating to political candidates, the higher donation per capita in those counties indicate those counties may important roles in the primary election in Ohio; however, more data is needed to determine this. 
 
 ------
 
@@ -687,23 +688,23 @@ p10 = ggplot(data = don_gen_gender,
 grid.arrange(p9, p10, ncol = 1)
 ```
 
-From Ohio campaign finance data, we can see that women seem to donate more to liberal parties and candidates more than men. The more interesting fact is that women have high tendency to donate more to female candidates much more than male donors, and male donors donates predonimnatly more to male candidates than to female runners.
+From Ohio campaign finance data, we can see that women seem to donate more to liberal parties and candidates more than men. The more interesting fact is that women have high tendency to donate more to female candidates much more than male donors, and male donors donates predominantly more to male candidates than to female runners.
 
 ### Women donate less than men
 ```{r echo=FALSE, fig.height = 11, fig.width= 8, Plot_Two}
 grid.arrange(p7,p8, ncol =1)
 ```
 
-While we need more data to corroborate this, it seems that counties with high total amount of donation do not necessaily donate more per capita. Some counties have low gross amount of donations, but each person is donate more to candidates, which could be indicative of a strong support for a particular candidate in that county. Therefore, the counties with high donation per capita could be influential in the local primary election.
+While we need more data to corroborate this, it seems that counties with high total amount of donation do not necessarily donate more per capita. Some counties have low gross amount of donations, but each person is donating more to candidates, which could be indicative of a strong support for a particular candidate in that county. Therefore, the counties with high donation per capita could be influential in the local primary election.
 
 ------
 
 # Reflection
 ###Issues
 I encountered several issues when examining the 2016 Presidential Campaign finance data.
-The most common ones are inadequate data. For example, one of the questions I set out to answer the relationship of gender and donations. While I have names of each donor, their genders are unknown from the original the dataset. I was able to use extra packages and data to fill in the gender data, it's not deterministic, rather, a probablistic view of each donor's gender. Therefore, we need to interprete the data with caution.
+The most common ones are inadequate data. For example, one of the questions I set out to answer the relationship of gender and donations. While I have names of each donor, their genders are unknown from the original the dataset. I was able to use extra packages and data to fill in the gender data, it's not deterministic, rather, a probabilistic view of each donor's gender. Therefore, we need to interpret the data with caution.
 
-Despite lack of necessary data, some of the data in the dataset is useful in making linkage to the key external data and helped with the analysis. Geographical location is one example. Although we only have zipcode and county names for each donor, we don't have the latitude and longitude data for them. With the extra information from other datasets and packages like zipcode, and maptools, I am able to connect the dots and conduct the analysis I set out to perform.
+Despite lack of necessary data, some of the data in the dataset is useful in making linkage to the key external data and helped with the analysis. Geographical location is one example. Although we only have zip codes and county names for each donor, we don't have the latitude and longitude data for them. With the extra information from other datasets and packages like zipcode, and maptools, I am able to connect the dots and conduct the analysis I set out to perform.
 
 Lastly, the dataset I have is for Ohio only. Although it helps me to understand the election status in Ohio, I am not able to extrapolate the conclusions nationwide.
 
@@ -730,3 +731,6 @@ http://www.nytimes.com/2015/10/15/upshot/the-gender-gap-in-political-giving.html
 
 4. Money Race, Crowdpac
 https://www.crowdpac.com/money-race
+
+5. Federal Election Commission
+http://fec.gov/
