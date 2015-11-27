@@ -1,0 +1,7 @@
+name: Publish Document
+account: rpubs
+server: rpubs.com
+bundleId:
+        https://api.rpubs.com/api/v1/document/130720/fd3b4d6ade35498eaf44da77a267ec3b
+url: http://rpubs.com/gary7135/130720
+when: 1448592460.61652

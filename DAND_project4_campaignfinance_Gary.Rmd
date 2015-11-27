@@ -42,7 +42,8 @@ suppressMessages(library(maptools))
 
 ```{r echo=T, Load_the_Data}
 # Load the Data
-oh = read.csv("/Users/garymu/Dropbox/Udacity/DAND/project4/OH.csv", stringsAsFactors= F)
+oh = read.csv("/Users/garymu/Dropbox/Udacity/DAND/project4/OH.csv", 
+              stringsAsFactors= F)
 str(oh)
 ```
 
@@ -58,7 +59,8 @@ oh = oh %>%
   separate(contbr_nm, c("contbr_last", "contbr_first"), sep = ", ", remove = F)
 
 #determining if donor is individual or a company
-oh$entity = ifelse(grepl("PARTNERS|CONSULTING|LLP|LLC|GROUP", oh$contbr_nm), "company", "individual") 
+oh$entity = ifelse(grepl("PARTNERS|CONSULTING|LLP|LLC|GROUP", oh$contbr_nm), 
+                   "company", "individual") 
 
 #clean up the first names for condidates and donors 
 first_name_clean = function(first_name) {
@@ -90,7 +92,8 @@ data(zipcode)
 ohio_zip = subset(zipcode, state == "OH")
 oh$contbr_zip = substr(oh$contbr_zip, 1, 5)
 names(ohio_zip)[1] = "contbr_zip"
-oh = merge(oh, ohio_zip[, c("contbr_zip" ,"latitude", "longitude")], all.x=TRUE)
+oh = merge(oh, ohio_zip[, c("contbr_zip" ,"latitude", "longitude")], 
+           all.x=TRUE)
 
 #Filter only donation with positive amount
 oh = oh[ oh$contb_receipt_amt >=0, ]
@@ -194,12 +197,14 @@ ggplot(data = dat2, aes(x = cand_last, y = money_received))+
   xlab("Candidates") +
   ylab("Donation Received")+
   coord_flip()+
-  scale_y_continuous(limits = c(0, max(dat2$money_received)+250000), label = comma)+
+  scale_y_continuous(limits = c(0, max(dat2$money_received)+250000), 
+                     label = comma)+
   scale_fill_manual(values=party_colors)+
   geom_text(aes(label = format(round(money_received, 0), big.mark = ",")), 
             stat = "identity", 
             size = 3,
-            hjust = -0.2)
+            hjust = -0.2)+
+  ggtitle("Total Donations Recevied by Candidates")
 ```
 
 Looking at the donations received by each candidate, a couple things jumped out:
@@ -222,7 +227,6 @@ dat3 = oh %>%
   group_by(party) %>%
   mutate(perc = round(100 * money_received/sum(money_received), 2)) %>%
   arrange(desc(perc))
-dat3
 
 dat3$cand_last = factor(dat3$cand_last, 
                         levels = dat3[order(dat3$perc)]$cand_last)
@@ -251,7 +255,8 @@ Because most of the donations are concentrated on only a few candidates, let's e
 For Democratic party, they are Hilary Clinton and Bernie Sanders; for Republican party, they are John Kasich, Marco Rubio, Ben Carson, Ted Cruz and Jeb Bush.
 
 ```{r, echo= F, warning= F}
-top_runners = c("Clinton", "Sanders", "Kasich", "Rubio", "Carson", "Bush", "Cruz")
+top_runners = c("Clinton", "Sanders", "Kasich", 
+                "Rubio", "Carson", "Bush", "Cruz")
 ggplot(data = subset(oh, cand_last %in% top_runners), 
        aes( x = cand_last, y = contb_receipt_amt, fill = party))+
   geom_boxplot()+
@@ -284,7 +289,8 @@ Bush on the other hand, also has high average donation dollar amounts, this coul
 ```{r, echo = F, warning= F}
 dat4 = dat2[ dat2$cand_last %in% top_runners, ] 
 dat4$cand_last = factor(dat4$cand_last, 
-                        levels = dat4$cand_last[order(dat4$avg_donation_amt, decreasing =T)])
+                        levels = dat4$cand_last[order(dat4$avg_donation_amt, 
+                                                      decreasing =T)])
 
 ggplot(data = dat4, 
        aes( x = cand_last, y = avg_donation_amt, fill = party))+
@@ -317,7 +323,7 @@ ggplot(data = oh , aes(x = contb_receipt_amt))+
 
 summary(oh$contb_receipt_amt)
 ```
-Donations in Ohio is heavily skewed towards the higher end, which means there are a couple of donors that made large amount of donations. 
+The histogram shows the distribution of donations made in Ohio, which is heavily skewed towards the higher end. This means there are a couple of donors that made large amount of donations. In fact, there is one donation with $16,200 which skews the distribution.
 
 As the average donation is higher than the 3rd quartile (avg donation is $463, 3rd quartile donation is $250), it's very apparent that most of the donations are in smaller amounts. Since the distribution of donation amount is heavily skewed, median is the more robust statistics to describe the centrality of the donation data, and most of the donations are centered around $100.
 
@@ -335,27 +341,36 @@ In Ohio, 99% of the donations dollars come from individual donors; however, whil
 
 
 ```{r, echo = F}
-ggplot(data = oh, aes(x = contb_receipt_dt, y = contb_receipt_amt, label = contbr_nm, color = party))+
-  geom_point(alpha = 1, 
-              aes(size = oh$contb_receipt_amt))+
-  geom_jitter()+
+ggplot(data = oh, aes(x = contb_receipt_dt, 
+                      y = contb_receipt_amt, 
+                      label = contbr_nm, 
+                      color = party))+
+  geom_point(alpha = 1/2, 
+              aes(size = oh$contb_receipt_amt,
+                  shape = factor(oh$party)))+
   scale_color_manual(values = party_colors) +
-  scale_y_continuous(label = comma) +
+  scale_y_log10(label = comma)+
   ylab("Donation Amount per Donor") +
   xlab("Donation Date")+
     geom_text(
       aes(
         label=ifelse(oh$contb_receipt_amt >=5500,
-                     paste0(oh$contbr_nm," $",oh$contb_receipt_amt, " to ",oh$cand_last),''),
-        angle = 10
-       ),
+                     paste0(oh$contbr_nm," $",
+                            oh$contb_receipt_amt, " to ",
+                            oh$cand_last),''),angle = 10),
       hjust=1.08,
       size = 2,
       color = "black")+
+  labs(shape="Party", color="Party", size = "Donation Amount")+
+  geom_hline(aes(yintercept = 5000), color = "purple", linetype="dashed")+
+  annotate("text", label = "Donation $5000", 
+           x = as.Date("2014-07-31"), y = 5500, size = 4, colour = "grey20")+
   ggtitle("Donations to Political Parties by Date")
 ```
 
-Plotting donors on a scatter plot by the amount donated and dates donations were made, it's easier to see the distribution of donations made by each donors.
+Plotting donors on a scatter plot by the amount donated and dates donations were made, it is easier to see the distribution of donations made by each donors to the two parties.
+
+It seems that most of the donations are between $10 to $1000, with a few large amounts of donations over $5000.
 
 Not surprisingly, the largest donation came from a company ("Benesch Friedlander Coplan & Aronoff LLP, aka Benesch Law Firm), which is a business law firm headquartered in Cleveland, Ohio. Benesch Law Firm made the single largest donation in Ohio to Kasich, as the firm seems to have a special relationship with the Ohio Governor. The firm's former employee, Billie Fiore, made political contributions to Kasich dated back to 2010, and in 2011, and she was then appointed to the Board of Trustees of Central Ohio Technical College in the same year.
 
@@ -368,8 +383,12 @@ quantile(oh$contb_receipt_amt)
 Therefore, zooming in to donations smaller than $250, we are able to see more details of the majority of the donors in Ohio.
 
 ```{r, echo = F}
-p5 = ggplot(data = subset(oh, contb_receipt_amt<= quantile(contb_receipt_amt, .75)), 
-       aes(x = contb_receipt_dt, y = contb_receipt_amt, label = contbr_nm, color = party))+
+p5 = ggplot(
+  data = subset(oh, contb_receipt_amt<= quantile(contb_receipt_amt, .75)), 
+  aes(x = contb_receipt_dt, 
+           y = contb_receipt_amt, 
+           label = contbr_nm, 
+           color = party))+
   geom_jitter(alpha = 1/2)+
   scale_color_manual(values = party_colors) +
   ylab("Donation Amount per Donor")+
@@ -377,8 +396,9 @@ p5 = ggplot(data = subset(oh, contb_receipt_amt<= quantile(contb_receipt_amt, .7
   ggtitle("75% of total Donations in Ohio\n(within 75% quartile)")+
   theme(legend.position	= "top", plot.title = element_text(size = 12))
 
-p6 = ggplot(data = subset(oh, contb_receipt_amt<= quantile(contb_receipt_amt, .75)), 
-       aes(x = contb_receipt_amt))+
+p6 = ggplot(
+  data = subset(oh, contb_receipt_amt<= quantile(contb_receipt_amt, .75)), 
+  aes(x = contb_receipt_amt))+
   geom_histogram(binwidth = 1, fill = "purple") +
   scale_color_manual(values = party_colors) +
   ylab("Count of Donors")+
@@ -437,7 +457,7 @@ From the test output, we can see that the donations from women is indeed signifi
 ```{r, echo = F}
 ggplot(data = subset(oh, !is.na(contbr_gender)&entity=="individual"), 
        aes(x = contb_receipt_amt, fill = contbr_gender))+
-  geom_histogram(binwidth = 200) +
+  geom_histogram(binwidth = 200, position = "dodge") +
   scale_x_continuous(label = comma) +
   scale_y_continuous(label = comma) +
   labs(fill = "Gender", 
@@ -452,7 +472,7 @@ Hence, we need to transform the axis to get a granular look into the majority of
 ```{r, echo = F}
 ggplot(data = subset(oh, !is.na(contbr_gender)&entity=="individual"), 
        aes(x = contb_receipt_amt, fill = contbr_gender))+
-  geom_histogram(binwidth = .15)+
+  geom_histogram(binwidth = .15, position = "dodge")+
   scale_y_continuous(label = comma) +
   scale_x_log10()+
    labs(fill = "Gender", 
@@ -483,12 +503,16 @@ don_gen_ideo = oh %>%
 don_gen_ideo
 
 ggplot(data = don_gen_ideo,
-       aes( x = contbr_gender, y = party)) +
-  geom_tile( aes(fill = avg_donations))+
-  scale_fill_continuous( "Avg. Donation ($)", low="red3", high="green4")+
+       aes( x = contbr_gender, y = party, fill = avg_donations)) +
+  geom_tile()+
+  scale_fill_continuous("Avg. Donation ($)", high = "steelblue", low = "orangered")+
   labs(title = "Donations to Liberal/Conservative by Gender", 
        x = "Donors Gender",
-       y = 'Ideology')
+       y = 'Ideology')+
+  geom_text(aes(label= paste0("$", don_gen_ideo$avg_donations)),
+            size=5, 
+            color = "grey25") 
+
 ```
 
 Looking at female donor group only, Ohio women do not seem to donate more to liberals than conservatives on average - only 35% women donated to the Democratic party, and the average amount donated to Democrats are 20% less than to the Republicans ($383 vs. $461).
@@ -498,7 +522,9 @@ However, when comparing men in Ohio, women have higher donations to the liberals
 So while Ohio women do not donate more to liberals within group, they do have higher tendency to make donations to candidates from the liberal party than men in Ohio. 
 
 ```{r, echo = F}
-oh$cand_gender = ifelse(oh$cand_last %in% c("Clinton", "Fiorina"), "female_candidate", "male_candidate" )
+oh$cand_gender = ifelse(oh$cand_last %in% c("Clinton", "Fiorina"), 
+                        "female_candidate", 
+                        "male_candidate" )
 
 don_gen_gender = oh %>%
   filter(!is.na(contbr_gender)&entity == "individual") %>%
@@ -513,10 +539,15 @@ don_gen_gender
 ggplot(data = don_gen_gender,
        aes( x = contbr_gender, y = cand_gender)) +
   geom_tile( aes(fill = avg_donations))+
-  scale_fill_continuous( "Avg. Donations ($)", low="red3", high="green4")+
+  scale_fill_continuous("Avg. Donation ($)", 
+                        high = "steelblue", 
+                        low = "orangered")+
   labs(title = "Donations to Male/Female Candidates by Gender", 
        x = "Donors Gender",
-       y = 'Candidates Gender')
+       y = 'Candidates Gender')+
+  geom_text(aes(label= paste0("$", don_gen_gender$avg_donations)),
+            size=5,
+            color = "grey25") 
 ```
 
 When it comes to donations to candidates by gender, female donors tend to donate more on average to female candidates, while men donated more to male candidates more, and cross-gender donation amounts tend to be lower than same-sex.
@@ -530,25 +561,29 @@ Hence, it also seems true that women tend to make more political donations to fe
 ------
 
 ## Where does the money come from?
-```{r, echo = F}
+```{r, echo = F, fig.width= 6}
 ohio = map_data('county', 'ohio')
 top_cities = data.frame(
   city = c("Cincinnati", "Columbus", "Cleveland", 'Toledo'),
   long = c(-84.6, -83, -81.7, -83.7) ,
   lat =c(39, 40.4, 41.8, 41.9) )
 
-ggplot() + geom_polygon(data=ohio, aes(x=long, y=lat, group = group),
+ggplot() + 
+  geom_polygon(data=ohio, aes(x=long, y=lat, group = group),
                       colour="grey", fill="white" )+
   geom_point(data = subset(oh, !is.na(latitude)&entity == 'individual'), 
-             aes(x = longitude, 
-                 y = latitude, 
-                 size = contb_receipt_amt,
-                 fill = contbr_gender), 
-             shape =21) +
-  geom_text(data = top_cities, aes(long, lat, label = city), size = 4)
+             color = "plum4",
+             aes(alpha = 1/2,
+                 x = longitude, 
+                 y = latitude)) +
+  geom_text(data = top_cities, aes(long, lat, label = city), size = 4)+
+  labs(title = "Donors Geographical Distribution") +
+  scale_alpha_continuous(name = element_blank(), labels = "donors")
 ```
 
-Not surprisingly, most of the donors are concentrated in the big cities in Ohio like Cincinnati, Columbus, Cleveland and Toledo. 
+Looking at the distribution of donors by their geographical locations in Ohio, it is not surprisingly to see that most of the donors are concentrated in the big cities like Cincinnati, Columbus, Cleveland and Toledo. 
+
+But what about the donations amounts by geographical locations, do big cities tend to donate more per capita than smaller ones? Let's look at aggregate donation amounts and donation per capita by counties for comparison:
 
 ```{r, fig.height = 12, fig.width = 8, echo= FALSE }
 latlong2county <- function(pointsDF) {
@@ -586,7 +621,8 @@ don_by_region = oh2 %>%
   )
 
 #Ohio census data
-pop = read.csv("/Users/garymu/Dropbox/Udacity/DAND/project4/ohio_census.csv", stringsAsFactors = F)
+pop = read.csv("/Users/garymu/Dropbox/Udacity/DAND/project4/ohio_census.csv", 
+               stringsAsFactors = F)
 pop$county = tolower(pop$county)
 
 #add in population info from census
@@ -594,7 +630,11 @@ don_by_region = merge(don_by_region, pop, all.x = TRUE)
 
 don_by_region$donation_per_cap = with(don_by_region, total_donation/Census)
 #add in geo info 
-don_by_region = merge(don_by_region, ohio, by.x = 'county', by.y = 'subregion', all.x = TRUE)
+don_by_region = merge(don_by_region, 
+                      ohio, 
+                      by.x = 'county', 
+                      by.y = 'subregion', 
+                      all.x = TRUE)
 
 top_cities2 = data.frame(
   city = c("Cincinnati", "Columbus", "Cleveland", 'Toledo'),
@@ -602,7 +642,8 @@ top_cities2 = data.frame(
   lat =c(39.25, 40, 41.45, 41.65) )
 
 key_counties = data.frame(
-  county = c("Hamilton", "Franklin", "Cuyahoga", 'Lucas', "Adams", "Monroe", "Belmont"),
+  county = c("Hamilton", "Franklin", "Cuyahoga", 'Lucas', 
+             "Adams", "Monroe", "Belmont"),
   long = c(-84.6, -83, -81.7, -83.7, -83.5, -81, -81) ,
   lat =c(39.1, 40.1, 41.55, 41.7, 38.8,39.7, 40) )
           
@@ -624,8 +665,11 @@ p7= ggplot(data=ohio, aes(x=long, y=lat, group = group),
 
 p8 = ggplot(data=ohio, aes(x=long, y=lat, group = group),
        colour="black") + 
-  geom_polygon(data = don_by_region, aes(fill= cut_number(don_by_region$donation_per_cap,5)))+
-  scale_fill_brewer("Donations Per Capita by County",palette  = 'RdYlGn', label = comma)+
+  geom_polygon(data = don_by_region, 
+               aes(fill= cut_number(don_by_region$donation_per_cap,5)))+
+  scale_fill_brewer("Donations Per Capita by County",
+                    palette  = 'RdYlGn', 
+                    label = comma)+
   theme_bw()+
   ggtitle("Avg Donations by County")+
   geom_text(data = top_cities2 , 
@@ -668,34 +712,64 @@ ggplot(data = dat3,
 
 In Ohio, the campaign finance donations distributions by candidates shows an interesting fact - More than 90% of the donations are received by the top 2-5 candidates, and the "front-runners" in each party leads the followers by a great margin.  
 
-### High Total Donations does not equal to income per capita 
-```{r echo=FALSE, fig.height = 10, Plot_Three}
-p9 = ggplot(data = don_gen_ideo,
-       aes( x = contbr_gender, y = party)) +
-  geom_tile( aes(fill = avg_donations))+
-  scale_fill_continuous( "Avg. Donation ($)", low="red3", high="green4")+
-  labs(title = "Donations to Liberal/Conservative by Gender", 
-       x = "Donors Gender",
-       y = 'Ideology')
-p10 = ggplot(data = don_gen_gender,
+### Women donate less than men
+```{r echo=FALSE, Plot_Two}
+ggplot(data = don_gen_gender,
        aes( x = contbr_gender, y = cand_gender)) +
   geom_tile( aes(fill = avg_donations))+
-  scale_fill_continuous( "Avg. Donations ($)", low="red3", high="green4")+
+  scale_fill_continuous("Avg. Donation ($)", 
+                        high = "steelblue", 
+                        low = "orangered")+
   labs(title = "Donations to Male/Female Candidates by Gender", 
        x = "Donors Gender",
-       y = 'Candidates Gender')
-
-grid.arrange(p9, p10, ncol = 1)
+       y = 'Candidates Gender')+
+  geom_text(aes(label= paste0("$", don_gen_gender$avg_donations)),
+            size=5,
+            color = "grey25") 
 ```
 
-From Ohio campaign finance data, we can see that women seem to donate more to liberal parties and candidates more than men. The more interesting fact is that women have high tendency to donate more to female candidates much more than male donors, and male donors donates predominantly more to male candidates than to female runners.
+As we saw from the analysis above, Ohio women seem to donate more to liberal parties and candidates more than men; however, when it comes to donation tendency by candidate genders, we see a clearer trend that women have high tendency to donate more to female candidates much more than male donors, and male donors donates predominantly more to male candidates than to female runners.
 
-### Women donate less than men
-```{r echo=FALSE, fig.height = 11, fig.width= 8, Plot_Two}
-grid.arrange(p7,p8, ncol =1)
+### High Total Donations does not equal to income per capita 
+```{r echo=FALSE, fig.width = 8, fig.height= 6.5,Plot_Three}
+don_by_region2 = oh2 %>%
+  group_by(county) %>%
+  summarise(
+    latitude = mean(latitude),
+    longitude = mean(longitude),
+    total_donation = sum(contb_receipt_amt),
+    avg_donation = mean(contb_receipt_amt),
+    n= n())
+
+p9 = ggplot(data=ohio, aes(x=long, y=lat, group = group),
+       colour="black") + 
+  geom_polygon(data = don_by_region, 
+               aes(fill= cut_number(don_by_region$donation_per_cap,5)))+
+  scale_fill_brewer("Donations Per Capita by County",
+                    palette  = 'RdYlGn', 
+                    label = comma)+
+  theme_bw()+
+  ggtitle("Avg Donations by County")+
+  geom_text(data = top_cities2 , 
+            aes(group = NULL, long, lat, label = city), 
+            size = 3, 
+            color = "white") +
+  geom_text(data = key_counties , 
+            aes(group = NULL, long, lat, label = county), 
+            size = 4, 
+            color = "black") +
+  geom_point(data = don_by_region2, 
+             color = "grey3",
+             alpha = 1/2,
+             aes(x = longitude, 
+                 y = latitude,
+                 group = NULL,
+                 size = cut_number(don_by_region2$total_donation,5)))
+
+p9 +scale_size_discrete(name = "Total Donation Amt")
 ```
 
-While we need more data to corroborate this, it seems that counties with high total amount of donation do not necessarily donate more per capita. Some counties have low gross amount of donations, but each person is donating more to candidates, which could be indicative of a strong support for a particular candidate in that county. Therefore, the counties with high donation per capita could be influential in the local primary election.
+While we need more data to corroborate this, it seems that counties with high total amount of donation do not necessarily donate more per capita. Some counties have relatively lower gross amount of donations, but each person is donating more to candidates, which could be indicative of a strong support for a particular candidate in that county. Therefore, the counties with high donation per capita could be influential in the local primary election.
 
 ------
 
@@ -718,6 +792,8 @@ However, 90% the donations go to the top few candidates across the Republican an
 Gender does play an important role in presidential campaign finance. On average, females donate less than males at both the aggregate and average level. While we don't have the sufficient data to examine why, we do see other important facts on gender and campaign finance - women tend to donate more to the liberals and to female candidates. 
 
 Lastly, big counties have high gross donations, but some smaller counties have high donations per capita. We don't necessarily know exactly the reason of the divergence, but counties with high donation per capita may indicate its strong support for a particular candidate, and may play an influential role in the local primary election.
+
+The campaign finance data I analyzed is for Ohio state only, and it would not be apprpriate to extrapolate to the other states or to the nation. Therefore, the future work may be to analyze the campaign finance data with all 50 states, and check if the insights we get from Ohio hold true on the national level.
 
 ### Resources
 1. Mapping, Stackoverflow
